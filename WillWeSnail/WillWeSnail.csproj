@@ -4,6 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,14 +34,6 @@
             <HintPath>..\libs\gmml\patcher\UndertaleModLib.dll</HintPath>
             <Private>False</Private>
         </Reference>
-        <Reference Include="WysApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\libs\gmml\mods\WysApi\WysApi.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="WysModMenu, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\libs\gmml\mods\WysModMenu\WysModMenu.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
     </ItemGroup>
 
     <ItemGroup>
@@ -54,9 +47,5 @@
     <Target Name="SetCurrentPath" AfterTargets="Build">
         <WriteLinesToFile File="bin\current.txt" Overwrite="true" Lines="$(OutputPath)" />
     </Target>
-
-     <PropertyGroup>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    </PropertyGroup>
 
 </Project>
