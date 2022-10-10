@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WillWeSnail", "WillWeSnail\WillWeSnail.csproj", "{9DFD2066-8283-4024-B732-6AC186D2F40F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mod", "mod\mod.csproj", "{9DFD2066-8283-4024-B732-6AC186D2F40F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{94B28E5F-042F-4A98-8E9E-235319B4B02C}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,12 +11,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{F2DDFBB2-F9E6-4A84-9E53-C1D8BC2DFAA5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bat", "bat", "{EE712764-9A55-4854-8029-BBECCFB33B0E}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\bat\_set_game_dir.bat = scripts\bat\_set_game_dir.bat
-		scripts\bat\clear_cache.bat = scripts\bat\clear_cache.bat
-		scripts\bat\libs.bat = scripts\bat\libs.bat
-		scripts\bat\mods.bat = scripts\bat\mods.bat
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
