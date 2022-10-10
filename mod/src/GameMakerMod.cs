@@ -15,7 +15,7 @@ namespace GmmlExampleMod;
 [EnableSimpleGmlInterop]
 public partial class ExampleMod : IGameMakerMod
 {
-     static Dictionary<Guid, CPlayerData> playerData = new Dictionary<Guid, CPlayerData>();
+    static Dictionary<Guid, CPlayerData> playerData = new Dictionary<Guid, CPlayerData>();
     static NetPeerConfiguration config = new NetPeerConfiguration("Will We Snail?");
     static NetConnectionStatus previousStatus = NetConnectionStatus.None;
     static NetClient client = new NetClient(config);
@@ -23,7 +23,6 @@ public partial class ExampleMod : IGameMakerMod
     public void Load(int audioGroup, UndertaleData data, ModData currentMod)
     {
         if (audioGroup != 0) return;
-        Console.WriteLine(client.ConnectionStatus);
         data.HookCode("gml_Object_obj_player_Step_2", "if(global.mpActive){\nsendMovement(lookdir,room)\n}\n#orig#()");
         UndertaleGameObject multiplayerManager = new UndertaleGameObject();
         multiplayerManager.Name = data.Strings.MakeString("obj_mp_manager");
@@ -32,13 +31,15 @@ public partial class ExampleMod : IGameMakerMod
         multiplayerManager.EventHandlerFor(EventType.Create, data.Strings, data.Code, data.CodeLocals)
         .AppendGmlSafe("show_debug_message(\"Multiplayer Object Created\")", data);
         multiplayerManager.EventHandlerFor(EventType.Step, EventSubtypeStep.Step, data).AppendGmlSafe("if(!global.mpActive){\nreturn 0\n}\nmultiplayerManager()\nupdateMultiplayerPlayers()", data);
-        multiplayerManager.EventHandlerFor(EventType.KeyRelease, EventSubtypeKey.vk_f5, data).AppendGmlSafe("global.mpActive=true\nmultiplayerConnect(get_string(\"IP\",\"127.0.0.1\"),get_integer(\"Port\",42069))\n", data);
+        multiplayerManager.EventHandlerFor(EventType.KeyRelease, EventSubtypeKey.vk_f5, data).AppendGmlSafe("if(global.mpActive==false){global.mpActive=true\nmultiplayerConnect(get_string(\"IP\",\"127.0.0.1\"),get_integer(\"Port\",42069))}else{global.mpActive=false\nmultiplayerDisconnect()}", data);
         UndertaleGameObject multiplayerPlayer = new UndertaleGameObject();
         multiplayerPlayer.Name = data.Strings.MakeString("obj_mp_player");
-        multiplayerPlayer.EventHandlerFor(EventType.Create, data.Strings, data.Code, data.CodeLocals).AppendGmlSafe("guid=\"0\"",data);
-        multiplayerPlayer.EventHandlerFor(EventType.Step,EventSubtypeStep.Step,data).AppendGmlSafe("show_debug_message(\"hehe\")",data);
+        multiplayerPlayer.EventHandlerFor(EventType.Create, data.Strings, data.Code, data.CodeLocals).AppendGmlSafe("guid=\"0\"", data);
+        multiplayerPlayer.EventHandlerFor(EventType.Step, EventSubtypeStep.Step, data).AppendGmlSafe(@"
+        
+        ", data);
         data.GameObjects.Add(multiplayerPlayer);
-        data.CreateLegacyScript("updateMultiplayerPlayers",@"
+        data.CreateLegacyScript("updateMultiplayerPlayers", @"
         playerCount = mp_getPlayerCount()
         for(i = 0; i< playerCount; i++)
         {
@@ -69,7 +70,7 @@ public partial class ExampleMod : IGameMakerMod
                 }
             }
         }
-        return 0",0);
+        return 0", 0);
 
         try
         {
@@ -77,39 +78,56 @@ public partial class ExampleMod : IGameMakerMod
         }
         catch { }
     }
+
+    [GmlInterop("multiplayerDisconnect")]
+    public static void multiplayerDisconnect(ref CInstance self, ref CInstance other)
+    {
+        client.Disconnect("Leaving");
+        Console.WriteLine("Disconnected from multiplayer");
+    }
+
     [GmlInterop("mp_getPlayerCount")]
-    public static double mp_getPlayerCount(ref CInstance self, ref CInstance other){
+    public static double mp_getPlayerCount(ref CInstance self, ref CInstance other)
+    {
         return playerData.Count;
     }
     [GmlInterop("mp_getPlayerGuid")]
-    public static string mp_getPlayerGuid(ref CInstance self, ref CInstance other, int position){
+    public static string mp_getPlayerGuid(ref CInstance self, ref CInstance other, int position)
+    {
         return playerData.Keys.ToList()[position].ToString();
     }
     [GmlInterop("mp_getPlayerPosX")]
-    public static double mp_getPlayerPosX(ref CInstance self, ref CInstance other, string guid){
+    public static double mp_getPlayerPosX(ref CInstance self, ref CInstance other, string guid)
+    {
         return playerData[new Guid(guid)].posX;
     }
     [GmlInterop("mp_getPlayerPosY")]
-    public static double mp_getPlayerPosY(ref CInstance self, ref CInstance other, string guid){
-    return playerData[new Guid(guid)].posY;
+    public static double mp_getPlayerPosY(ref CInstance self, ref CInstance other, string guid)
+    {
+        return playerData[new Guid(guid)].posY;
     }
     [GmlInterop("mp_getPlayerVelX")]
-    public static double mp_getPlayerVelX(ref CInstance self, ref CInstance other, string guid){
+    public static double mp_getPlayerVelX(ref CInstance self, ref CInstance other, string guid)
+    {
         return playerData[new Guid(guid)].hSpeed;
     }
     [GmlInterop("mp_getPlayerVelY")]
-    public static double mp_getPlayerVelY(ref CInstance self, ref CInstance other, string guid){
+    public static double mp_getPlayerVelY(ref CInstance self, ref CInstance other, string guid)
+    {
         return playerData[new Guid(guid)].vSpeed;
     }
     [GmlInterop("mp_getPlayerLookdir")]
-    public static int mp_getPlayerLookdir(ref CInstance self, ref CInstance other, string guid){
-        if(playerData[new Guid(guid)].lookDir){
+    public static int mp_getPlayerLookdir(ref CInstance self, ref CInstance other, string guid)
+    {
+        if (playerData[new Guid(guid)].lookDir)
+        {
             return 1;
         }
         return -1;
     }
     [GmlInterop("mp_getPlayerRoom")]
-    public static double mp_getPlayerRoom(ref CInstance self, ref CInstance other, string guid){
+    public static double mp_getPlayerRoom(ref CInstance self, ref CInstance other, string guid)
+    {
         return playerData[new Guid(guid)].room;
     }
 
@@ -142,7 +160,7 @@ public partial class ExampleMod : IGameMakerMod
         }
     }
 
-    
+
 
     [GmlInterop("multiplayerManager")]
     public static void multiplayerManager(ref CInstance self, ref CInstance other)
