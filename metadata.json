@@ -1,0 +1,20 @@
+{
+    "id": "ml.meteormaster.test",
+    "name": "Test",
+    "version": "0.1.0",
+    "authors": [ "OmegaMetor" ],
+    "dependencies": [
+        {
+            "id": "com.github.cgytrus.gmml.hooker",
+            "version": "0.1.0"
+        },
+        {
+            "id": "com.github.cgytrus.gmml.config",
+            "version": "0.1.0"
+        },
+        {
+            "id": "com.github.cgytrus.gmml.hooker",
+            "version": "0.1.0"
+        }
+    ]
+}
