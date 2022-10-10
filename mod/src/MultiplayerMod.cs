@@ -34,9 +34,44 @@ public partial class ExampleMod : IGameMakerMod
         multiplayerManager.EventHandlerFor(EventType.KeyRelease, EventSubtypeKey.vk_f5, data).AppendGmlSafe("if(global.mpActive==false){global.mpActive=true\nmultiplayerConnect(get_string(\"IP\",\"127.0.0.1\"),get_integer(\"Port\",42069))}else{global.mpActive=false\nmultiplayerDisconnect()}", data);
         UndertaleGameObject multiplayerPlayer = new UndertaleGameObject();
         multiplayerPlayer.Name = data.Strings.MakeString("obj_mp_player");
-        multiplayerPlayer.EventHandlerFor(EventType.Create, data.Strings, data.Code, data.CodeLocals).AppendGmlSafe("guid=\"0\"", data);
+        multiplayerPlayer.EventHandlerFor(EventType.Create, data.Strings, data.Code, data.CodeLocals).AppendGmlSafe(@"
+        guid=""0""
+        house_height=1
+        house_width=1
+        house_tilt=0
+        lookdir=0
+        if (instance_exists(obj_levelstyler))
+        {
+	        if (variable_instance_exists(obj_levelstyler.id, ""col_snail_body""))
+                col_snail_body = obj_levelstyler.col_snail_body;
+                col_snail_outline = obj_levelstyler.col_snail_outline;
+                col_snail_shell = obj_levelstyler.col_snail_shell;
+                col_snail_eye = obj_levelstyler.col_snail_eye;
+        }
+        ", data);
         multiplayerPlayer.EventHandlerFor(EventType.Step, EventSubtypeStep.Step, data).AppendGmlSafe(@"
-        
+        x = ds_map_find_value(global.mpDataPosX, guid)
+        y = ds_map_find_value(global.mpDataPosY, guid)
+        hspeed = ds_map_find_value(global.mpDataVelX, guid)
+        vspeed = ds_map_find_value(global.mpDataVelY, guid)
+        lookdir = ds_map_find_value(global.mpDataLookdir, guid)
+        myroom = ds_map_find_value(global.mpDataRoom, guid)
+        if(myroom != room){
+            instance_destroy()
+        }
+        ", data);
+        multiplayerPlayer.EventHandlerFor(EventType.Draw, EventSubtypeDraw.Draw, data).AppendGmlSafe(@"
+        show_debug_message(x)
+        house_height = lerp(house_height, 1+(vspeed*.05),2)
+        house_height=clamp(house_height,0.4,1.6)
+        house_width=clamp(1/house_height,.8,5)
+        house_tilt=lerp(house_tilt,hspeed,0.1)
+        house_sprite=69
+        draw_sprite_ext(house_sprite, 0, x - (-15 * lookdir), y + 16, house_width * -1*lookdir, house_height, house_tilt, col_snail_shell, 1);
+        draw_sprite_ext(house_sprite, 1, x - (-15 * lookdir), y + 16, house_width * -1*lookdir, house_height, house_tilt, col_snail_outline, 1);
+        draw_sprite_ext(spr_player_base, 0, x, y, image_xscale * -1*lookdir, image_yscale, image_angle, col_snail_body, 1);
+        draw_sprite_ext(spr_player_base, 1, x, y, image_xscale * -1*lookdir, image_yscale, image_angle, col_snail_outline, 1);
+
         ", data);
         data.GameObjects.Add(multiplayerPlayer);
         data.CreateLegacyScript("updateMultiplayerPlayers", @"
@@ -64,10 +99,6 @@ public partial class ExampleMod : IGameMakerMod
                 }
                 newSnail = instance_create_layer(0,0,""Player"",obj_mp_player)
                 newSnail.guid = players[i]
-            }else{
-                    if(ds_map_find_value(global.mpDataRoom, players[i]) != room){
-                    instance_destroy(ds_list_find_index(mpsnails,players[i]))
-                }
             }
         }
         return 0", 0);
