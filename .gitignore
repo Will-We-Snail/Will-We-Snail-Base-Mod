@@ -400,3 +400,5 @@ FodyWeavers.xsd
 libs/
 
 _set_game_dir.bat
+
+.vscode/
