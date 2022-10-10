@@ -1,3 +1,3 @@
 @echo off
 
-call .\add_mod.bat mod
+call .\add_mod.bat WillWeSnail
